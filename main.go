@@ -5,18 +5,20 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 )
 
-// Msg структура для сообщений
 type Msg struct {
 	Message string `json:"message"`
 }
 
-var messages []Msg
+var (
+	messages []Msg
+	mu       sync.Mutex
+)
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(map[string]string{"error": "use POST"})
@@ -30,24 +32,24 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	messages = append(messages, m) // сохраняем в памяти
-
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"reply":    "You sent: " + m.Message,
+	mu.Lock()
+	messages = append(messages, m)
+	resp := map[string]interface{}{
 		"messages": messages,
-	})
+	}
+	mu.Unlock()
+
+	json.NewEncoder(w).Encode(resp)
 }
 
 func main() {
-	// Статика (HTML, CSS, JS)
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
 	http.HandleFunc("/api/echo", echoHandler)
 
-	// Render даёт порт через переменную PORT
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // fallback для локального запуска
+		port = "8080"
 	}
 
 	log.Println("Server running on port", port)
