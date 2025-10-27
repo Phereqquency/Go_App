@@ -1,21 +1,16 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Simple Go webapp</title>
-<link rel="stylesheet" href="/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go Chat</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<main class="card">
-<h1>Echo — Go + JS</h1>
-<form id="echoForm">
-<label for="msg">Сообщение:</label>
-<input id="msg" name="msg" type="text" placeholder="Напишите что-нибудь" required>
-<button type="submit">Отправить</button>
-</form>
-<section id="result" class="result"></section>
-</main>
-<script src="/main.js"></script>
+<h1>Go Chat</h1>
+<input id="message" placeholder="Write message...">
+<button id="send">Отправить</button>
+<ul id="chat"></ul>
+<script src="main.js"></script>
 </body>
 </html>
