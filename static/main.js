@@ -1,30 +1,24 @@
-document.addEventListener('DOMContentLoaded', () => {
-const form = document.getElementById('echoForm')
-const result = document.getElementById('result')
+const input = document.getElementById("message");
+const button = document.getElementById("send");
+const chat = document.getElementById("chat");
 
+button.onclick = async () => {
+    const msg = input.value;
+    if (!msg) return;
 
-form.addEventListener('submit', async (e) => {
-e.preventDefault()
-const input = document.getElementById('msg')
-const payload = { message: input.value }
+    const res = await fetch("/api/echo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+    });
 
+    const data = await res.json();
+    chat.innerHTML = "";
+    data.messages.forEach(m => {
+        const li = document.createElement("li");
+        li.textContent = m.message;
+        chat.appendChild(li);
+    });
 
-try {
-const res = await fetch('/api/echo', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(payload)
-})
-
-
-const data = await res.json()
-if (res.ok) {
-result.textContent = data.reply || JSON.stringify(data)
-} else {
-result.textContent = 'Ошибка: ' + (data.error || JSON.stringify(data))
-}
-} catch (err) {
-result.textContent = 'Network error: ' + err.message
-}
-})
-})
+    input.value = "";
+};
